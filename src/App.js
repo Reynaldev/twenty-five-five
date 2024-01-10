@@ -60,6 +60,8 @@ class App extends React.Component {
 
           $(".display").css(timeLabelWhite);
 
+          this.fmtTimeToStr(this.state.sessionTime);
+
           this.setState({
             newTime: false
           });
