@@ -1,8 +1,10 @@
-import React from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faAngleUp, faAngleDown, faPlay, faRotateLeft } from '@fortawesome/free-solid-svg-icons';
+import React from 'react';
+import $ from 'jquery';
 import './App.css';
 
+// Timer enum
 const timerLabel = {
   Session: "Session",
   Break: "Break"
@@ -12,6 +14,15 @@ let s = new Date();
 let timeout, offsetIntv;
 let currentMs = 0;
 let offsetTime = 0;
+
+// Styling
+const timeLabelWhite = {
+  'color': 'rgb(200, 200, 200)'
+}
+
+const timeLabelRed = {
+  'color': 'rgb(200, 0, 0)'
+}
 
 class App extends React.Component {
   constructor(props) {
@@ -47,31 +58,34 @@ class App extends React.Component {
           s = new Date();
           s.setTime(s.getTime() + (this.state.sessionTime * 60000));
 
-          console.log(`Ends at ${s.toTimeString()}`);
+          $(".display").css(timeLabelWhite);
 
           this.setState({
             newTime: false
           });
         } else {
-          console.log(`Timer + offset: ${(new Date(s.getTime() + (offsetTime * 1000))).toTimeString()}`);
-          
           s.setTime(s.getTime() + (offsetTime * 1000));
-
           this.clearOffset();
         }
 
         timeout = setInterval(() => {
           currentMs = s.getTime() - t.getTime();
           t.setTime(currentMs);
-
-          // console.log(`Current date: ${t.toLocaleString()}`);
-          // console.log(`Time left (ms): ${currentMs}`);
           
           this.fmtTimeToStr(t.getMinutes(), t.getSeconds());
 
           t = new Date();
+          let sec = Math.floor(currentMs / 1000);
 
-          if (currentMs <= 0) {
+          if (sec <= 10) {
+            if (sec % 2 === 0) {
+              $(".display").css(timeLabelRed);
+            } else {
+              $(".display").css(timeLabelWhite);
+            }
+          }
+
+          if (sec <= 0) {
             this.stopTime();
 
             this.setState({
@@ -91,17 +105,12 @@ class App extends React.Component {
   stopTime() {   
     window.clearInterval(timeout);
     
-    // console.log(Math.floor((currentMs % (1000 * 60 * 60)) / (1000 * 60)));
     console.log("Pomodoro stop!");
   }
   startOffsetCount() {
     console.log("Counting offset");
 
-    offsetIntv = setInterval(() => {
-      offsetTime++;
-
-      console.log(`Offset (s): ${offsetTime}`);
-    }, 1000);
+    offsetIntv = setInterval(() => { offsetTime++; }, 1000);
   }
   clearOffset() {
     offsetTime = 0;
@@ -114,7 +123,8 @@ class App extends React.Component {
       newTime: true
     }, () => {
       currentMs = 0;
-
+      
+      $(".display").css(timeLabelWhite);
       window.clearInterval(timeout);
 
       this.clearOffset();
