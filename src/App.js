@@ -41,6 +41,7 @@ class App extends React.Component {
     this.startTime = this.startTime.bind(this);
     this.resetTimer = this.resetTimer.bind(this);
     this.clearOffset = this.clearOffset.bind(this);
+    this.setBreakTime = this.setBreakTime.bind(this);
     this.fmtTimeToStr = this.fmtTimeToStr.bind(this);
     this.setSessionTime = this.setSessionTime.bind(this);
     this.startOffsetCount = this.startOffsetCount.bind(this);
@@ -49,11 +50,9 @@ class App extends React.Component {
     this.setState({
       timeProgress: (this.state.timeProgress) ? false : true
     }, () => {
-      let t = new Date();
+      let t;
 
       if (this.state.timeProgress) {
-        console.log("Pomodoro start!");
-
         if (this.state.newTime) {
           s = new Date();
           s.setTime(s.getTime() + (this.state.sessionTime * 60000));
@@ -70,6 +69,7 @@ class App extends React.Component {
           this.clearOffset();
         }
 
+        t = new Date();
         timeout = setInterval(() => {
           currentMs = s.getTime() - t.getTime();
           t.setTime(currentMs);
@@ -88,16 +88,34 @@ class App extends React.Component {
           }
 
           if (sec <= 0) {
-            this.stopTime();
+            switch (this.state.timerLabel) {
+              case timerLabel.Session:
+                // this.stopTime();
 
-            this.setState({
-              timeProgress: false,
-              newTime: true
-            });
+                s = new Date();
+                s.setTime(s.getTime() + (this.state.breakTime * 60000));
+    
+                this.setState({
+                  timerLabel: timerLabel.Break
+                });
+                break;
+              case timerLabel.Break:
+                s = new Date();
+                s.setTime(s.getTime() + (this.state.sessionTime * 60000));
+  
+                $(".display").css(timeLabelWhite);
+  
+                this.setState({
+                  timerLabel: timerLabel.Session
+                });
+                break;
+              default:
+                break;
+            }
           }
         }, 500);
       } else {   
-        console.log(`Pause date: ${t.toTimeString()}`);
+        // console.log(`Pause date: ${t.toTimeString()}`);
 
         this.stopTime();
         this.startOffsetCount();
@@ -106,12 +124,8 @@ class App extends React.Component {
   }
   stopTime() {   
     window.clearInterval(timeout);
-    
-    console.log("Pomodoro stop!");
   }
   startOffsetCount() {
-    console.log("Counting offset");
-
     offsetIntv = setInterval(() => { offsetTime++; }, 1000);
   }
   clearOffset() {
@@ -157,6 +171,26 @@ class App extends React.Component {
       newTime: true
     });
   }
+  setBreakTime() {
+    if (this.state.timeProgress) return;
+
+    var el = document.activeElement;
+
+    switch (el.id) {
+      case "break-increment":
+        this.setState({
+          breakTime: (this.state.breakTime >= 60) ? 60 : this.state.breakTime + 1
+        });
+        break;
+      case "break-decrement":
+        this.setState({
+          breakTime: (this.state.breakTime <= 1) ? 1 : this.state.breakTime - 1
+        });
+        break;
+      default:
+        break;
+    }
+  }
   fmtTimeToStr(m, s = "00") {
     let minute = m.toString();
     let second = s.toString();
@@ -181,9 +215,9 @@ class App extends React.Component {
           <div class="col">
             <h4 id="break-label">Break Length</h4>
             
-            <button id="break-increment"><FontAwesomeIcon icon={faAngleUp} /></button>
+            <button id="break-increment" onClick={this.setBreakTime}><FontAwesomeIcon icon={faAngleUp} /></button>
             <h5 id="break-length" style={{padding: "8px"}}>{this.state.breakTime}</h5>
-            <button id="break-decrement"><FontAwesomeIcon icon={faAngleDown} /></button>
+            <button id="break-decrement" onClick={this.setBreakTime}><FontAwesomeIcon icon={faAngleDown} /></button>
           </div>
           <div class="col-sm-2" style={{paddingTop: "4em", paddingBottom: "4em"}}>
             <button id="start_stop" onClick={this.startTime}><FontAwesomeIcon icon={faPlay} /></button>
