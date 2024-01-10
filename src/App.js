@@ -4,6 +4,8 @@ import React from 'react';
 import $ from 'jquery';
 import './App.css';
 
+import beep from './assets/sound/beep.wav';
+
 // Timer enum
 const timerLabel = {
   Session: "Session",
@@ -88,6 +90,8 @@ class App extends React.Component {
           }
 
           if (sec <= 0) {
+            document.getElementById("beep").play();
+
             switch (this.state.timerLabel) {
               case timerLabel.Session:
                 // this.stopTime();
@@ -233,6 +237,8 @@ class App extends React.Component {
             <button id="session-decrement" onClick={this.setSessionTime}><FontAwesomeIcon icon={faAngleDown} /></button>
           </div>
         </div>
+
+        <audio id="beep" src={beep}></audio>
       </div>
     );
   }
