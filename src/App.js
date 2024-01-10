@@ -113,7 +113,7 @@ class App extends React.Component {
                 break;
             }
           }
-        }, 500);
+        }, 1000);
       } else {   
         // console.log(`Pause date: ${t.toTimeString()}`);
 
@@ -134,6 +134,8 @@ class App extends React.Component {
   }
   resetTimer() {
     this.setState({
+      breakTime: 5,
+      sessionTime: 25,
       timerLabel: timerLabel.Session,
       timeProgress: false,
       newTime: true

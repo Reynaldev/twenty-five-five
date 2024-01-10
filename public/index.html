@@ -19,6 +19,17 @@
   <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>
     <div id="root"></div>
+
+    <footer>
+      <span>
+        <p id="copyright"></p>
+      </span>
+      <p>Project source code can be seen <a href="https://github.com/Reynaldev/twenty-five-five" target="_blank">here</a></p>
+    </footer>
+
+    <script>
+      document.getElementById("copyright").innerHTML = `Made by <a href="https://github.com/Reynaldev" target="_blank">ReynDev</a> &copy; ${(new Date()).getFullYear()}`;
+    </script>
     
     <script src="https://cdn.freecodecamp.org/testable-projects-fcc/v1/bundle.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
